@@ -1,0 +1,516 @@
+---
+title: "FinalProject"
+author: "SHASHIDHAR REDDY MALIGIREDDY"
+date: "2023-12-07"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+sal<- read.csv("salaries (1).csv")
+```
+
+
+```{r}
+#null values
+sum(is.na(sal))
+```
+
+```{r}
+#unique values in each column
+sapply(sal, function(x) length(unique(x)))
+```
+
+
+```{r}
+#label encoding for `experience_level` column INTO `experience_level_label`
+sal$experience_level_label <- as.numeric(factor(sal$experience_level))
+```
+
+
+```{r}
+#label encoding for employment_type column INTO employment_type_label
+sal$employment_type_label <- as.numeric(factor(sal$employment_type))
+```
+
+
+
+```{r}
+#label encoding for company_size column INTO company_size_label
+sal$company_size_label <- as.numeric(factor(sal$company_size))
+```
+
+```{r}
+head(sal)
+```
+
+```{r}
+library(readr)
+library(ggplot2)
+sal<- read_csv("salaries (1).csv")
+head(sal)
+```
+
+```{r}
+#if salary_currency is other than usd then convert salary_in_usd to USD
+sal$salary_in_usd <- ifelse(sal$salary_currency == "AUD", sal$salary_in_usd * 0.65, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "BRL", sal$salary_in_usd * 0.2, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "CAD", sal$salary_in_usd * 0.74, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "CHF", sal$salary_in_usd * 1.14, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "DKK", sal$salary_in_usd * 0.14, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "EUR", sal$salary_in_usd * 1.08, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "GBP", sal$salary_in_usd * 1.26, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "HKP", sal$salary_in_usd * 0.13, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "HUF", sal$salary_in_usd * 0.0028, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "ILS", sal$salary_in_usd * 0.27, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "INR", sal$salary_in_usd * 0.012, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "JPY", sal$salary_in_usd * 0.0068, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "MXN", sal$salary_in_usd * 0.058, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "NOK", sal$salary_in_usd * 0.091, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "PHP", sal$salary_in_usd * 0.018, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "PLN", sal$salary_in_usd * 0.25, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "SGD", sal$salary_in_usd * 0.75, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "THB", sal$salary_in_usd * 0.028, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "TRY", sal$salary_in_usd * 0.035, sal$salary_in_usd)
+sal$salary_in_usd <- ifelse(sal$salary_currency == "ZAR", sal$salary_in_usd * 0.053, sal$salary_in_usd)
+```
+
+
+```{r}
+#remove salary_currency column
+#sal$salary_currency <- NULL
+#sal$salary_in_usd<-salaries$salary_in_usd / 1000
+```
+
+```{r}
+#access data with job_title as Data Scientist,AI Engineer,ML Engineer
+salaries_1 <- subset(sal, job_title %in% c("Data Scientist", "AI Engineer", "ML Engineer"))
+```
+
+```{r}
+unique(salaries_1$job_title)
+```
+
+
+#How does the salary distribution on vary across different experience levels and job Ntles within the AI, ML, and Data Science domains globally?
+
+```{r}
+ggplot(salaries_1, aes(x = experience_level, y = salary_in_usd, fill = job_title)) + geom_bar(stat = "identity", position = "dodge") + theme(axis.text.x = element_text(angle = 
+90, hjust = 1))
+
+```
+
+
+
+
+
+
+
+
+
+```{r}
+
+summary(sal)
+
+cor_matrix <- cor(sal[, c("salary_in_usd", "remote_ratio")])
+print("Correlation Matrix:")
+print(cor_matrix)
+
+
+unique_levels <- unique(sal$experience_level)
+
+
+anova_result <- aov(salary_in_usd ~ experience_level, data = sal)
+
+
+print(summary(anova_result))
+
+posthoc_result <- TukeyHSD(anova_result)
+print(posthoc_result)
+```
+
+here we started doing the dataanalysis for the dataset for the understanding purpose
+
+
+
+
+```{r}
+ggplot(sal, aes(x = salary_in_usd)) +
+  geom_histogram(bins = 30, fill = "blue", color = "black") +
+  theme_minimal() +
+  labs(title = "Distribution of Salaries", x = "Salary in USD", y = "Frequency") +
+  scale_x_continuous(
+    labels = scales::number_format(scale = 1e-3, suffix = "k"),
+    breaks = seq(0, max(sal$salary_in_usd), by = 50000)
+  )
+```
+here we can see the distribution os salaries which are starting from 30k to 300k 
+
+
+Is there a significant difference in salaries based on the extent of
+remote work, and does this vary across countries or company sizes?
+
+```{r}
+library(dplyr)
+
+sal %>%
+  group_by(company_size) %>%
+  summarise(avg_salary = mean(salary_in_usd)) %>%
+  ggplot(aes(x = company_size, y = avg_salary, fill = company_size)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black") +
+  theme_minimal() +
+  labs(
+    title = "Average Salary by Company Size",
+    x = "Company Size",
+    y = "Average Salary in USD"
+  ) +
+  scale_fill_manual(values = c("blue", "green", "red"))  # Custom colors
+
+
+
+```
+
+here we started grouping the salaries by company size and avaraged for the better understanding pourpose by the compoany size for the better representation of the graphs.
+
+
+
+Are  experience levels consistently associated with
+higher salaries across different company sizes?
+```{r}
+library(ggplot2)
+
+
+sal$salary_in_k <- sal$salary_in_usd / 1000
+
+ggplot(sal, aes(x = experience_level, y = salary_in_k, color = experience_level)) +
+  geom_point() +
+  theme_minimal() +
+  labs(
+    title = "Scatter Plot of Salary in 'k' by Experience Level",
+    x = "Experience Level",
+    y = "Salary in 'k'"
+  ) +
+  scale_y_continuous(breaks = seq(0, max(sal$salary_in_k), by = 100),
+                     labels = scales::number_format(scale = 1000e-3)) +
+  scale_color_brewer(palette = "Set3")  
+
+```
+
+from the above graph we can see that the salaries of each employe based on there experience level
+
+```{r}
+
+sample_size <- length(sal$salary_in_usd)
+cat("Sample Size:", sample_size, "\n")
+library(dplyr)
+
+summary_data <- sal %>%
+  group_by(company_size) %>%
+  summarise(avg_salary = mean(salary_in_usd))
+
+str(summary_data)
+```
+
+here we see that the avarage salary of large , medium and small companies salaries of employeses
+
+```{r}
+
+ggplot(sal, aes(x = as.factor(remote_ratio), y = salary_in_usd)) +
+  geom_violin(fill = "skyblue", color = "blue") +
+  labs(title = "Salary Distribution by Remote Work Ratio", x = "Remote Work Ratio", y = "Salary (USD)")
+
+ggplot(sal, aes(x = as.factor(company_size), y = salary_in_usd)) +
+  geom_violin(fill = "lightcoral", color = "red") +
+  labs(title = "Salary Distribution by Company Size", x = "Company Size", y = "Salary (USD)")
+```
+
+```{r}
+ggplot(sal, aes(x = as.factor(remote_ratio), y = salary_in_usd / 1000, color = as.factor(remote_ratio))) +
+  geom_jitter(position = position_jitter(width = 0.3)) +
+  labs(title = "Salary Differences by Remote Work Ratio", x = "Remote Work Ratio", y = "Salary (in 50ks USD)") +
+  scale_y_continuous(labels = scales::comma_format(scale = 1e-3, suffix = "ks")) +  # Adjust y-axis labels
+  theme_minimal()
+
+ggplot(sal, aes(x = as.factor(company_size), y = salary_in_usd / 1000, color = as.factor(company_size))) +
+  geom_jitter(position = position_jitter(width = 0.3)) +
+  labs(title = "Salary Differences by Company Size", x = "Company Size", y = "Salary (in 50ks USD)") +
+  scale_y_continuous(labels = scales::comma_format(scale = 1e-3, suffix = "ks")) +  # Adjust y-axis labels
+  theme_minimal()
+```
+
+
+How does the salary distribuNon vary across different experience
+levels and the company size?
+```{r}
+sal %>%
+  group_by(experience_level, company_size, employee_residence) %>%
+  summarise(avg_salary = mean(salary_in_usd)) %>%
+  ggplot(aes(x = company_size, y = avg_salary, fill = experience_level)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Average Salaries by Experience Level, Company Size, and Region",
+       x = "Company Size", y = "Average Salary (USD)", fill = "Experience Level") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+from the above graph we can see the relation between the avarage salary , company size and the experience level 
+
+
+```{r}
+salary_ranges <- c(0, 50000, 100000, 150000, 200000, Inf)
+salary_labels <- c("Low", "Medium-Low", "Medium", "Medium-High", "High")
+
+sal$salary_category <- cut(sal$salary_in_usd, breaks = salary_ranges, labels = salary_labels, include.lowest = TRUE)
+
+head(sal)
+```
+
+ here we have grouped the salaries into four groups like low , medium-low ,medium , medium-high
+ 
+ 
+ 
+ 
+ 
+ 
+how can we predict the salary of Machine Learning Engineers in the United States using features such as work year, experience level, and company size? 
+ 
+```{r}
+
+sal <- sal[, c( "experience_level", "company_size", "salary_in_usd")]
+sal$experience_level <- as.numeric(as.factor(sal$experience_level))
+sal$company_size <- as.numeric(as.factor(sal$company_size))
+
+set.seed(123)
+train_model <- sample(1:nrow(sal), 0.8 * nrow(sal))
+train_data <- sal[train_model, ]
+test_data <- sal[-train_model, ]
+
+# Linear regression
+lm_model <- lm(salary_in_usd ~   experience_level + company_size, data = train_data)
+lm_predictions <- predict(lm_model, newdata = test_data)
+
+# Random forest
+library(randomForest)
+rf_model <- randomForest(salary_in_usd ~ experience_level + company_size, data = train_data)
+rf_predictions <- predict(rf_model, newdata = test_data)
+
+# Evaluate models
+lm_rmse <- sqrt(mean((lm_predictions - test_data$salary_in_usd)^2))
+rf_rmse <- sqrt(mean((rf_predictions - test_data$salary_in_usd)^2))
+
+# Evaluate the model on the test set
+predictions <- predict(lm_model, newdata = test_data)
+
+# R-squared
+r_squared <- 1 - sum((test_data$salary_in_usd - predictions)^2) / sum((test_data$salary_in_usd - mean(test_data$salary_in_usd))^2)
+
+# Mean Squared Error (MSE)
+mse <- mean((test_data$salary_in_usd - predictions)^2)
+
+cat("R-squared:", round(r_squared, 4), "\n")
+cat("Mean Squared Error:", round(mse, 2), "\n")
+
+
+cat("Linear Regression RMSE:", round(lm_rmse, 4), "\n")
+cat("Random Forest RMSE:", round(rf_rmse, 4), "\n")
+```
+\
+```{r}
+#missing_values <- colSums(is.na(sal[c('experience_level', 'salary_category')]))
+
+# Print the summary
+#print(missing_values)
+
+# Handle missing values (for example, removing rows with missing values)
+sal <- na.omit(sal)
+
+# Select relevant features
+features <- sal %>%
+  select(experience_level)
+
+# Remove rows with missing values
+#data <- na.omit(cbind(features, salary_category = sal$salary_category))
+```
+
+
+
+
+
+
+
+
+
+
+how can we predict the company level  based on their experience level and the salary ?
+
+
+
+```{r}
+library(randomForest)
+library(Metrics)
+
+
+
+
+# Convert factors to numeric
+sal$experience_level <- as.factor(sal$experience_level)
+sal$company_size <- as.factor(sal$company_size)
+
+# Split the dataset
+
+train_model <- createDataPartition(sal$company_size, p = 0.80, list = FALSE)
+training_set <- sal[train_model,]
+test_set <- sal[-train_model,]
+
+# Train a Random Forest model
+model <- randomForest(company_size ~ experience_level + salary, data = training_set)
+
+# Make predictions
+predictions <- predict(model, newdata = test_set)
+
+# Evaluate the model
+conf_matrix <- confusionMatrix(predictions, test_set$company_size)
+
+# Calculate metrics
+accuracy <- sum(predictions == test_set$company_size) / length(test_set$company_size)
+
+# Output the results
+list(confusion_matrix = conf_matrix, accuracy = accuracy)
+
+numeric_predictions <- as.numeric(predictions)
+numeric_test_labels <- as.numeric(test_set$company_size)
+
+# Calculate MSE
+mse <- mse(numeric_test_labels, numeric_predictions)
+
+# Calculate RSE (Root Mean Squared Error)
+rse <- sqrt(mse)
+
+# Calculate R²
+r_squared <- R2(numeric_test_labels, numeric_predictions)
+
+# Output the results
+list(mse = mse, rse = rse, r_squared = r_squared)
+
+```
+
+```{r}
+# Load necessary libraries
+library(tidyverse)
+library(caret)
+library(nnet)
+
+# Convert categorical variables to factors
+data_frame$experience_level <- as.factor(data_frame$experience_level)
+data_frame$company_size <- as.factor(data_frame$company_size)
+
+# Split the data into training and testing sets
+
+splitIndex <- createDataPartition(data_frame$company_size, p = .80, list = FALSE)
+training_set <- data_frame[splitIndex,]
+test_set <- data_frame[-splitIndex,]
+
+# Train logistic regression model
+
+multinom_model <- multinom(company_size ~ experience_level + salary_in_usd, data = training_set)
+
+# Make predictions
+predictions <- predict(multinom_model, test_set)
+
+# Evaluate the model
+confusionMatrix(predictions, test_set$company_size)
+
+
+```
+
+
+
+```{r}
+
+library(tidyverse)
+library(caret)
+library(e1071)
+
+sal$experience_level <- as.factor(sal$experience_level)
+sal$company_size <- as.factor(sal$company_size)
+
+set.seed(123)  # for reproducible results
+splitIndex <- createDataPartition(sal$company_size, p = .80, list = FALSE)
+training_set <- sal[splitIndex,]
+test_set <- sal[-splitIndex,]
+
+# Train an SVM model
+svm_model <- svm(company_size ~ experience_level + salary_in_usd, data = training_set)
+
+# Make predictions
+predictions <- predict(svm_model, test_set)
+
+# Evaluate the model
+confusionMatrix(predictions, test_set$company_size)
+```
+
+```{r}
+colnames(sal)
+```
+
+how can we predict the salary of Machine Learning Engineers in the United States using features such as work year, experience level, and company size? 
+
+```{r}
+library(dplyr)
+library(fastDummies)
+library(glmnet)
+
+
+features <- sal[c("work_year", "experience_level", "employment_type", "job_title", 
+                  "salary", "salary_currency", "salary_in_usd", "employee_residence", 
+                  "remote_ratio", "company_location", "company_size")]
+
+
+features_encoded <- fastDummies::dummy_cols(features, select_columns = c("experience_level", "job_title",  "company_size"))
+
+# Combine encoded features with the target variable (salary)
+data <- cbind(features_encoded, salary_in_usd = sal$salary_in_usd)
+
+# splitting the dataset into train and test data , 80% is train data and 20% is test data
+set.seed(123)
+train_split <- sample(seq_len(nrow(data)), size = 0.8 * nrow(data))
+train_data <- data[train_split, ]
+test_data <- data[-train_split, ]
+
+# parameter tuning using cross-validation for the enhancement
+cv_model <- cv.glmnet(
+  x = as.matrix(train_data[, -ncol(train_data)]),
+  y = train_data$salary_in_usd,
+  alpha = 1  
+)
+
+# Find the optimal lambda for using in the lasso regression
+best_lambda <- cv_model$lambda.min
+
+
+
+# Build a final model using the optimal lambda
+final_model <- glmnet(
+  x = as.matrix(train_data[, -ncol(train_data)]),
+  y = train_data$salary_in_usd,
+  alpha = 1,  
+  lambda = best_lambda
+)
+
+# Make predictions on the test set
+predictions <- predict(final_model, newx = as.matrix(test_data[, -ncol(test_data)]))
+
+# Evaluate the final model
+mse <- mean((predictions - test_data$salary_in_usd)^2)
+rsquared <- 1 - mse / var(test_data$salary_in_usd)
+
+cat("Mean Squared Error:", mse, "\n")
+cat("R-squared:", rsquared, "\n")
+```
+
+

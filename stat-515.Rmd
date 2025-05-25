@@ -1,0 +1,37 @@
+---
+title: "stat-515"
+author: "B.Sriraj"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(caret)
+data <- read.csv('salaries.csv')
+
+# Convert categorical variables to factors
+data$experience_level <- as.factor(data$experience_level)
+data$company_size <- as.factor(data$company_size)
+
+# Splitting the dataset into the Training set and Test set
+set.seed(123) # for reproducible results
+split <- createDataPartition(data$company_size, p = .80, list = FALSE)
+training_set <- data[split,]
+test_set <- data[-split,]
+
+# Train a model, for example, a Random Forest
+model <- train(company_size ~ experience_level + salary, data = training_set, method = 'rf')
+
+# Make predictions
+predictions <- predict(model, test_set)
+
+# Evaluate the model
+confusionMatrix(predictions, test_set$company_size)
+
+```
+
